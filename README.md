@@ -1,41 +1,43 @@
 <div align="center">
 
-# minimon
+# winimon
 
-**System monitoring for terminals too small for `btop`.**
+**Windows system monitoring for terminals too small for `btop`.**
 
-`minimon` adapts to your terminal size: tiny terminals stay minimal, while wider and taller terminals show more system information without turning into a terminal dashboard the size of a control room.
+`winimon` adapts to your terminal size: tiny terminals stay minimal, while wider and taller terminals show more system information without turning into a terminal dashboard the size of a control room.
+
+> **Windows only.** For Linux, use [`minimon`](https://github.com/xonix97/minimon) — same idea, built for Linux.
 
 ![Rust](https://img.shields.io/badge/Rust-000000?style=flat\&logo=rust\&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-111111?style=flat\&logo=linux\&logoColor=white)
+![Windows](https://img.shields.io/badge/Windows-0078D4?style=flat\&logo=windows\&logoColor=white)
 ![Version](https://img.shields.io/badge/version-0.1.3-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 <br>
 
 <p align="center">
-  <img src="assets/image.png" width="19%" alt="minimon screenshot 1">
-  <img src="assets/image1.png" width="19%" alt="minimon screenshot 2">
-  <img src="assets/image2.png" width="19%" alt="minimon screenshot 3">
-  <img src="assets/image3.png" width="19%" alt="minimon screenshot 4">
-  <img src="assets/image4.png" width="19%" alt="minimon screenshot 5">
+  <img src="assets/image.png" width="19%" alt="winimon screenshot 1">
+  <img src="assets/image1.png" width="19%" alt="winimon screenshot 2">
+  <img src="assets/image2.png" width="19%" alt="winimon screenshot 3">
+  <img src="assets/image3.png" width="19%" alt="winimon screenshot 4">
+  <img src="assets/image4.png" width="19%" alt="winimon screenshot 5">
 </p>
 
 <br>
 
-*`minimon` still fits.*
+*`winimon` still fits.*
 
 </div>
 
 ---
 
-## Why minimon?
+## Why winimon?
 
-`btop`, `htop`, and other system monitors are great when they have space.
+`btop` and other system monitors are great when they have space.
 
 Shrink the terminal far enough and things start falling apart.
 
-**minimon is built specifically for tiny terminals.**
+**winimon is built specifically for tiny terminals on Windows.**
 
 It keeps the information you actually want visible:
 
@@ -91,10 +93,10 @@ VRAM  █░░░░░░░░░░░ 7% 611M/8.0G
 More information is shown when space allows:
 
 ```text
-CPU   █░░░░░░░░░░░ 6% 24 cores • load 1.21
-RAM   ███░░░░░░░░░ 28% 4.2G/15.2G 11.0G free
+CPU   █░░░░░░░░░░░ 6% 24C
+RAM   ███░░░░░░░░░ 28% 4.2G/15.2G AVAIL 11.0G
 GPU   ██░░░░░░░░░░ 10% 54°C
-VRAM  █░░░░░░░░░░░ 7% 611M/8.0G 7.4G free
+VRAM  █░░░░░░░░░░░ 7% 611M/8.0G
 ```
 
 ### Wide + tall terminals
@@ -107,196 +109,165 @@ RAM   ███░░░░░░░░░ 28% 4.2G/15.2G
 GPU   ██░░░░░░░░░░ 10% 54°C
 VRAM  █░░░░░░░░░░░ 7% 611M/8.0G
 ────────────────────────────────────────────────
-UP 08:30:34  LOAD 1.21 0.95 0.80  TASKS 452
-SWAP 0K/4.0G  DISK 45G/200G (22%)
-HOST arch  KERNEL 6.8.9-arch  CORES 8
-OS Arch Linux  FREQ 1.4GHz  TEMP 28°C
-NET wlp2s0 RX 1.2G TX 300M  BAT 85%
+UP 2d 04:30:25  TASKS 391
+SWAP 28.2G/33.6G  DISK 511.4G/750.0G (68%)
+HOST PC  KERNEL Windows  CORES 24
+OS Windows
+NET Wi-Fi RX 406M TX 79M  BAT 100%
 ```
 
-Very wide layouts can also show the large `minimon` ASCII header and richer system details.
+Very wide layouts can also show the large `winimon` ASCII header and richer system details.
 
 ---
 
-## Quick Start
+## Quick Start (Windows)
 
-### Arch Linux / CachyOS
+Prerequisite: Rust (provides `cargo`):
 
-Install Rust if needed:
-
-```bash
-sudo pacman -S rustup
-rustup default stable
+```powershell
+winget install Rustlang.Rustup
 ```
 
-Clone, build, and install:
+Clone, install, run (the installer adds `winimon` to your user `PATH` automatically):
 
-```bash
-git clone https://github.com/xonix97/minimon.git
-cd minimon
-cargo build --release
-install -Dm755 target/release/minimon ~/.local/bin/minimon
-```
-
-Run:
-
-```bash
-minimon
+```powershell
+git clone https://github.com/xonix97/winimon.git
+cd winimon
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+winimon
 ```
 
 ---
 
-## Installation
+## Installation (Windows)
 
-### Arch Linux / CachyOS
+### Option 1: installer script (recommended)
 
-Install Rust:
+From the repo directory:
 
-```bash
-sudo pacman -S rustup
-rustup default stable
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-Clone minimon:
+This:
 
-```bash
-git clone https://github.com/xonix97/minimon.git
-cd minimon
-```
+1. Builds the optimized release binary (`cargo build --release`)
+2. Copies `target\release\winimon.exe` to `%USERPROFILE%\.local\bin\winimon.exe`
+3. Adds `%USERPROFILE%\.local\bin` to your **user** `PATH` automatically (no admin needed)
+4. Verifies with `winimon --version`
 
-Build the optimized release binary:
+Restart open terminals after installing so they pick up the updated `PATH`.
 
-```bash
+### Option 2: manual install
+
+```powershell
 cargo build --release
+New-Item -ItemType Directory -Path "$HOME\.local\bin" -Force
+Copy-Item target\release\winimon.exe "$HOME\.local\bin\winimon.exe" -Force
 ```
 
-Install it:
+Then add `$HOME\.local\bin` to your user `PATH` if it isn't there already (the installer script does this for you).
 
-```bash
-install -Dm755 target/release/minimon ~/.local/bin/minimon
-```
+### Option 3: via Cargo
 
-Or install using Cargo:
-
-```bash
+```powershell
 cargo install --path . --force
 ```
 
-Run:
+This places `winimon.exe` in your Cargo bin directory (already on `PATH` for standard Rust installs).
 
-```bash
-minimon
+---
+
+## If `winimon` is not found
+
+The installer adds `%USERPROFILE%\.local\bin` to your user `PATH` automatically. If a terminal still can't find it:
+
+1. Restart the terminal (open terminals don't reload `PATH`)
+2. Verify:
+
+```powershell
+$env:Path -split ';'
+Get-Command winimon
+winimon --version
 ```
 
 ---
 
-## If `minimon` is not found
+## Linux?
 
-Make sure `~/.local/bin` is in your `PATH`.
+`winimon` is **Windows only** and will not run on Linux.
 
-### Bash
-
-```bash
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-### Zsh
-
-```bash
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-### Fish
-
-```fish
-fish_add_path ~/.local/bin
-```
-
----
-
-## Other Linux distributions
-
-Install Rust using the official Rust installation method for your distribution.
-
-Once `cargo` is available:
+For Linux, use [`minimon`](https://github.com/xonix97/minimon):
 
 ```bash
 git clone https://github.com/xonix97/minimon.git
 cd minimon
 cargo build --release
 install -Dm755 target/release/minimon ~/.local/bin/minimon
-```
-
-Then:
-
-```bash
-minimon
 ```
 
 ---
 
 ## Usage
 
-Run minimon normally:
+Run winimon normally:
 
-```bash
-minimon
+```powershell
+winimon
 ```
 
 Set a faster refresh interval:
 
-```bash
-minimon --interval 500
+```powershell
+winimon --interval 500
 ```
 
 Show CPU only:
 
-```bash
-minimon --cpu
+```powershell
+winimon --cpu
 ```
 
 Show RAM only:
 
-```bash
-minimon --ram
+```powershell
+winimon --ram
 ```
 
 Show CPU and RAM:
 
-```bash
-minimon --cpu --ram
+```powershell
+winimon --cpu --ram
 ```
 
 Show GPU and VRAM:
 
-```bash
-minimon --gpu
+```powershell
+winimon --gpu
 ```
 
 Use the minimal layout:
 
-```bash
-minimon --minimal
+```powershell
+winimon --minimal
 ```
 
 Disable bars:
 
-```bash
-minimon --no-bars
+```powershell
+winimon --no-bars
 ```
 
 Use ASCII rendering:
 
-```bash
-minimon --ascii
+```powershell
+winimon --ascii
 ```
 
 Disable ANSI colors:
 
-```bash
-minimon --no-color
+```powershell
+winimon --no-color
 ```
 
 ---
@@ -304,7 +275,7 @@ minimon --no-color
 ## Options
 
 ```text
-minimon [OPTIONS]
+winimon [OPTIONS]
 
 --interval MS   Set refresh interval in milliseconds
 --cpu           Show CPU
@@ -322,29 +293,28 @@ minimon [OPTIONS]
 
 ## Hardware support
 
-| Metric             | Support     |
-| ------------------ | ----------- |
-| CPU usage          | ✅ Linux     |
-| RAM usage          | ✅ Linux     |
-| NVIDIA GPU usage   | ✅ Supported |
-| NVIDIA temperature | ✅ Supported |
-| NVIDIA VRAM        | ✅ Supported |
-| AMD GPU            | 🚧 Planned  |
-| Intel GPU          | 🚧 Planned  |
+| Metric             | Support      |
+| ------------------ | ------------ |
+| CPU usage          | ✅ Windows    |
+| RAM usage          | ✅ Windows    |
+| NVIDIA GPU usage   | ✅ Supported  |
+| NVIDIA temperature | ✅ Supported  |
+| NVIDIA VRAM        | ✅ Supported  |
+| AMD GPU            | 🚧 Planned   |
+| Intel GPU          | 🚧 Planned   |
+| CPU temperature    | 🚧 Planned   |
 
-CPU usage is read from:
+On Windows, metrics come from native APIs:
 
-```text
-/proc/stat
-```
+* CPU usage: `GetSystemTimes`
+* RAM: `GlobalMemoryStatusEx`
+* Uptime: `GetTickCount64`
+* Disk: `GetDiskFreeSpaceExW`
+* Battery: `GetSystemPowerStatus`
+* Network: `GetIfTable2`
+* Processes: performance counters / `tasklist`
 
-RAM information is read from:
-
-```text
-/proc/meminfo
-```
-
-NVIDIA GPU metrics currently use:
+NVIDIA GPU metrics use:
 
 ```text
 nvidia-smi
@@ -356,11 +326,11 @@ nvidia-smi
 
 To check whether NVIDIA monitoring will work:
 
-```bash
+```powershell
 nvidia-smi
 ```
 
-If that command displays your GPU, minimon should automatically detect it.
+If that command displays your GPU, winimon should automatically detect it.
 
 GPU monitoring includes:
 
@@ -369,17 +339,17 @@ GPU monitoring includes:
 * VRAM usage
 * Total VRAM
 
-If no supported GPU is detected, minimon can still display CPU and RAM statistics.
+If no supported GPU is detected, winimon still displays CPU and RAM statistics.
 
 ---
 
 ## Lightweight by design
 
-minimon is intentionally small.
+winimon is intentionally small.
 
 It doesn't run a daemon.
 
-It doesn't need root.
+It doesn't need admin.
 
 It doesn't need half your screen.
 
@@ -393,45 +363,26 @@ The goal is simple:
 
 Go into your cloned repository:
 
-```bash
-cd minimon
-```
-
-Pull the latest changes:
-
-```bash
+```powershell
+cd winimon
 git pull
-```
-
-Rebuild:
-
-```bash
-cargo build --release
-```
-
-Replace the installed binary:
-
-```bash
-install -Dm755 target/release/minimon ~/.local/bin/minimon
-```
-
-Check the version:
-
-```bash
-minimon --version
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+winimon --version
 ```
 
 ---
 
 ## Uninstall
 
-Remove the installed binary:
+Run the uninstall script:
 
-```bash
-rm ~/.local/bin/minimon
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\uninstall.ps1
 ```
 
-That's it. minimon does not install a daemon or scatter configuration files across your system.
+This removes `%USERPROFILE%\.local\bin\winimon.exe` and removes that directory from your user `PATH`.
+
+winimon does not install a daemon or scatter configuration files across your system.
 
 ---
 
@@ -439,26 +390,26 @@ That's it. minimon does not install a daemon or scatter configuration files acro
 
 Development build:
 
-```bash
+```powershell
 cargo build
 ```
 
 Run directly:
 
-```bash
+```powershell
 cargo run
 ```
 
 Optimized release build:
 
-```bash
+```powershell
 cargo build --release
 ```
 
 The release binary will be located at:
 
 ```text
-target/release/minimon
+target\release\winimon.exe
 ```
 
 ---
@@ -473,6 +424,7 @@ target/release/minimon
 * [x] Adaptive terminal layout
 * [x] Minimal mode
 * [x] ASCII fallback
+* [x] Automatic PATH setup on install
 * [ ] AMD GPU support
 * [ ] Intel GPU support
 * [ ] CPU temperature
@@ -482,14 +434,14 @@ target/release/minimon
 
 ## Philosophy
 
-`minimon` isn't trying to replace `btop`.
+`winimon` isn't trying to replace `btop`.
 
 If you have an entire terminal available, use `btop`. It's excellent.
 
-minimon is for the terminal where `btop` doesn't fit.
+winimon is for the terminal where `btop` doesn't fit.
 
 <div align="center">
 
-### Built with Rust. Built to fit.
+### Built with Rust. Built to fit. Built for Windows.
 
 </div>
