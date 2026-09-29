@@ -72,15 +72,15 @@ fn parse_args() -> Options {
             "--gpu" => o.gpu = true,
             "--no-color" => o.no_color = true,
             "--version" | "-V" => {
-                println!("minimon {}", env!("CARGO_PKG_VERSION"));
+                println!("winimon {}", env!("CARGO_PKG_VERSION"));
                 std::process::exit(0);
             }
             "--help" | "-h" => {
                 println!(
-                    "minimon - tiny Linux system monitor
+                    "winimon - tiny system monitor
 
 USAGE:
-  minimon [OPTIONS]
+  winimon [OPTIONS]
 
 OPTIONS:
   --interval MS   Refresh interval (default: 1000)
@@ -95,7 +95,7 @@ OPTIONS:
   -h, --help      Show help
 
 Branding & adaptive layout:
-  minimon shows a cute minimon mascot beside the metrics when the
+  winimon shows a cute winimon mascot beside the metrics when the
   terminal is wide enough (>=68 cols) and shows extended system info
   (uptime, load, tasks, swap, disk, host/kernel/cores, os/freq/temp,
   net/battery) when even wider/taller. All UI respects --ascii
@@ -221,23 +221,31 @@ fn gpu_metrics() -> (Option<f64>, Option<u32>, Option<u64>, Option<u64>) {
     )
 }
 
+fn test_width_var() -> Option<String> {
+    env::var("WINIMON_TEST_WIDTH").ok().or_else(|| env::var("MINIMON_TEST_WIDTH").ok())
+}
+
+fn test_height_var() -> Option<String> {
+    env::var("WINIMON_TEST_HEIGHT").ok().or_else(|| env::var("MINIMON_TEST_HEIGHT").ok())
+}
+
+fn env_flag_set(win_key: &str, legacy_key: &str) -> bool {
+    env::var_os(win_key).is_some() || env::var_os(legacy_key).is_some()
+}
+
 #[cfg(not(windows))]
 fn terminal_size() -> (usize, usize) {
-    if let (Ok(w), Ok(h)) = (
-        env::var("MINIMON_TEST_WIDTH"),
-        env::var("MINIMON_TEST_HEIGHT"),
-    ) {
+    if let (Some(w), Some(h)) = (test_width_var(), test_height_var()) {
         if let (Ok(ww), Ok(hh)) = (w.parse::<usize>(), h.parse::<usize>()) {
             if ww > 0 && hh > 0 {
                 return (ww, hh);
             }
         }
     }
-    if let Ok(w) = env::var("MINIMON_TEST_WIDTH") {
+    if let Some(w) = test_width_var() {
         if let Ok(ww) = w.parse::<usize>() {
             if ww > 0 {
-                let h = env::var("MINIMON_TEST_HEIGHT")
-                    .ok()
+                let h = test_height_var()
                     .and_then(|x| x.parse().ok())
                     .unwrap_or(24);
                 return (ww, h);
@@ -974,7 +982,7 @@ fn ram_metrics() -> io::Result<(f64, u64, u64)> {
 
 #[cfg(windows)]
 fn terminal_size() -> (usize, usize) {
-    if let (Ok(w), Ok(h)) = (env::var("MINIMON_TEST_WIDTH"), env::var("MINIMON_TEST_HEIGHT")) {
+    if let (Some(w), Some(h)) = (test_width_var(), test_height_var()) {
         if let (Ok(w), Ok(h)) = (w.parse::<usize>(), h.parse::<usize>()) {
             if w > 0 && h > 0 {
                 return (w, h);
@@ -1242,14 +1250,14 @@ fn side_logo_lines(opts: &Options) -> Vec<String> {
     if opts.ascii {
         if opts.no_color {
             vec![
-                "  /\\_/\\  minimon".to_string(),
+                "  /\\_/\\  winimon".to_string(),
                 format!(" ( o.o ) v{} ", v),
                 "  > ^ <  tiny mon".to_string(),
                 " /  -  \\  monitor".to_string(),
             ]
         } else {
             vec![
-                format!("  {CYAN}/\\_/\\{RESET}  {BOLD}minimon{RESET}"),
+                format!("  {CYAN}/\\_/\\{RESET}  {BOLD}winimon{RESET}"),
                 format!(" {CYAN}( o.o ){RESET} {DIM}v{:<5}{RESET}", v),
                 format!("  {CYAN}> ^ <{RESET}  {DIM}tiny mon{RESET}"),
                 format!(" {CYAN}/  -  \\{RESET}  {DIM} monitor{RESET}"),
@@ -1257,14 +1265,14 @@ fn side_logo_lines(opts: &Options) -> Vec<String> {
         }
     } else if opts.no_color {
         vec![
-            "  ∧__∧   minimon".to_string(),
+            "  ∧__∧   winimon".to_string(),
             format!(" (｡•ω•｡) v{} ", v),
             " / つ♥   tiny mon".to_string(),
             " しーＪ  monitor ".to_string(),
         ]
     } else {
         vec![
-            format!("  {CYAN}∧__∧{RESET}   {BOLD}minimon{RESET}"),
+            format!("  {CYAN}∧__∧{RESET}   {BOLD}winimon{RESET}"),
             format!(" {CYAN}(｡•ω•｡){RESET} {DIM}v{:<5}{RESET}", v),
             format!(" {CYAN}/ つ♥{RESET}   {DIM}tiny mon{RESET}"),
             format!(" {CYAN}しーＪ{RESET}  {DIM} monitor {RESET}"),
@@ -1276,13 +1284,13 @@ fn header_logo_lines(opts: &Options, width: usize) -> Vec<String> {
     let v = env!("CARGO_PKG_VERSION");
     let raw: Vec<String> = if opts.ascii {
         vec![
-            format!(" /\\_/\\   minimon v{}", v),
+            format!(" /\\_/\\   winimon v{}", v),
             " ( o.o )  tiny system monitor".to_string(),
             "  > ^ <   for terminals too small".to_string(),
         ]
     } else {
         vec![
-            format!("  ∧__∧    minimon v{}", v),
+            format!("  ∧__∧    winimon v{}", v),
             " (｡•ω•｡)  tiny system monitor".to_string(),
             " / つ♥    for terminals too small".to_string(),
         ]
@@ -1312,10 +1320,10 @@ fn header_logo_lines(opts: &Options, width: usize) -> Vec<String> {
         if opts.no_color {
             out.push(padded);
         } else {
-            // add subtle coloring: make minimon BOLD CYAN
-            // We already have raw without codes, so wrap "minimon" part
+            // add subtle coloring: make winimon BOLD CYAN
+            // We already have raw without codes, so wrap "winimon" part
             let colored = padded
-                .replacen("minimon", &format!("{BOLD}{CYAN}minimon{RESET}"), 1);
+                .replacen("winimon", &format!("{BOLD}{CYAN}winimon{RESET}"), 1);
             out.push(colored);
         }
     }
@@ -1323,7 +1331,7 @@ fn header_logo_lines(opts: &Options, width: usize) -> Vec<String> {
 }
 
 fn big_word_lines(width: usize, opts: &Options) -> Vec<String> {
-    // Figlet small font for "minimon" (height 4 visible) + tagline
+    // Figlet small font for "winimon" (height 4 visible) + tagline
     let raw = vec![
         "          _          _",
         "  _ __   (_)  _ _   (_)  _ __    ___   _ _",
@@ -1969,7 +1977,7 @@ fn render_dashboard(
         }
     }
 
-    // Big ASCII word "minimon" for very wide & tall terminals (char art)
+    // Big ASCII word "winimon" for very wide & tall terminals (char art)
     let mut big_word_block: Vec<String> = Vec::new();
     let mut show_big_word = false;
     if !selected && interactive && width >= 70 && height >= 10 {
@@ -2169,7 +2177,7 @@ fn main() -> io::Result<()> {
     })
     .expect("failed to install Ctrl+C handler");
 
-    let interactive = io::stdout().is_terminal() || env::var_os("MINIMON_FORCE_TTY").is_some();
+    let interactive = io::stdout().is_terminal() || env_flag_set("WINIMON_FORCE_TTY", "MINIMON_FORCE_TTY");
 
     let mut previous_cpu = cpu_sample()?;
     thread::sleep(Duration::from_millis(200));
@@ -2206,7 +2214,7 @@ fn main() -> io::Result<()> {
         if interactive {
             print!("\x1b[H\x1b[J{}", lines.join("\n"));
             io::stdout().flush()?;
-            if env::var_os("MINIMON_ONE_SHOT").is_some() {
+            if env_flag_set("WINIMON_ONE_SHOT", "MINIMON_ONE_SHOT") {
                 break;
             }
         } else {
