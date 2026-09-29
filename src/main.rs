@@ -1333,10 +1333,10 @@ fn header_logo_lines(opts: &Options, width: usize) -> Vec<String> {
 fn big_word_lines(width: usize, opts: &Options) -> Vec<String> {
     // Figlet small font for "winimon" (height 4 visible) + tagline
     let raw = vec![
-        "          _          _",
-        "  _ __   (_)  _ _   (_)  _ __    ___   _ _",
-        " | '  \\  | | | ' \\  | | | '  \\  / _ \\ | ' \\",
-        " |_|_|_| |_| |_||_| |_| |_|_|_| \\___/ |_||_|",
+        "           _          _",
+        " __ __ __ (_)  _ _   (_)  _ __    ___   _ _",
+        " \\ V  V / | | | ' \\  | | | '  \\  / _ \\ | ' \\",
+        "  \\_/\\_/  |_| |_||_| |_| |_|_|_| \\___/ |_||_|",
     ];
     let max_vis = raw.iter().map(|l| l.len()).max().unwrap_or(0);
     let block_pad = if max_vis >= width {
