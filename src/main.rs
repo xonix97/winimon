@@ -2072,11 +2072,12 @@ fn render_dashboard(
         if remaining >= 2 {
             if let Some(secs) = uptime_secs() {
                 let up = format_uptime(secs);
-                let load = load_avg().map(|(a, _, _)| format!("{:.2}", a)).unwrap_or_else(|| "-".to_string());
-                let mut footer = if opts.no_color {
-                    format!("up {}  load {}", up, load)
-                } else {
-                    format!("{DIM}up{RESET} {}  {DIM}load{RESET} {}", up, load)
+                let mut footer = match load_avg() {
+                    Some((a, _, _)) if opts.no_color => format!("up {}  load {:.2}", up, a),
+                    Some((a, _, _)) => format!("{DIM}up{RESET} {}  {DIM}load{RESET} {:.2}", up, a),
+                    // No load average on this platform (e.g. Windows): omit it instead of "-"
+                    None if opts.no_color => format!("up {}", up),
+                    None => format!("{DIM}up{RESET} {}", up),
                 };
                 // truncate
                 while visible_len(&footer) > width && footer.len() > 10 {
